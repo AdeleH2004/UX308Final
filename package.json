@@ -1,21 +1,15 @@
 {
   "name": "jasmine-components",
   "main": "src/components/App.jsx",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "scripts": {
     "start": "expo start",
     "tunnel": "expo start --tunnel"
   },
   "dependencies": {
-    "expo": "~51.0.0",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "react-native": "0.74.1",
-    "react-native-web": "~0.19.10",
+    "expo": "~54.0.0",
+    "react": "19.1.0",
+    "react-native": "0.81.5",
     "react-native-paper": "^5.15.0"
-  },
-  "devDependencies": {
-    "@types/react": "~18.2.45",
-    "babel-preset-expo": "~11.0.0"
   }
 }
