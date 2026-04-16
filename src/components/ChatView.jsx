@@ -1,31 +1,38 @@
-import { StyleSheet, View, ScrollView, KeyboardAvoidingView, Keyboard, Platform } from 'react-native';
+import React from 'react';
+import { StyleSheet, View, ScrollView } from 'react-native';
 import MessageBubble from './MessageBubble';
-import InputBar from './InputBar';
 
-
-export default function({scrollToBottom, scrollViewRef, sendMessage, styles, messages, setInputBarText, inputBarText}){
-    return(
-        <>
-        <ScrollView 
-          ref={scrollViewRef} 
-          style={styles.messages}
-          onContentSizeChange={() => scrollToBottom()} // Auto-scrolls when new content arrives
-        >
-          {messages.map((msg, index) => (
-            <MessageBubble 
-              key={index} 
-              direction={msg.direction} 
-              text={msg.text} 
-            />
-          ))}
-        </ScrollView>
-
-        <InputBar 
-          onSendPressed={sendMessage} 
-          onSizeChange={() => scrollToBottom(false)}
-          onChangeText={setInputBarText}
-          text={inputBarText}
-        />
-    </>
-    );
+export default function ChatView({ messages, scrollViewRef }) {
+  return (
+    <View style={styles.container}>
+      <ScrollView 
+        ref={scrollViewRef} 
+        style={styles.messages}
+        contentContainerStyle={styles.contentContainer}
+      >
+        {messages && messages.map((msg, index) => (
+          <MessageBubble 
+            key={index} 
+            direction={msg.direction} 
+            text={msg.text} 
+            imageUrl={msg.imageUrl} 
+          />
+        ))}
+      </ScrollView>
+    </View>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  messages: {
+    flex: 1,
+    paddingHorizontal: 10,
+  },
+  contentContainer: {
+    paddingBottom: 20,
+    paddingTop: 60,
+  }
+});

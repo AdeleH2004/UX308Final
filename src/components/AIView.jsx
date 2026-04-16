@@ -1,99 +1,99 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, ScrollView, KeyboardAvoidingView, Keyboard, Platform } from 'react-native';
-import { handleInput } from '../Order';
-import ChatView from './ChatView'
-import WelcomeView from './WelcomeView';
+import React, { useState, useRef } from 'react';
+import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { handleInput, clearInput } from '../Order';
 
-export default function(){
+import ChatView from './ChatView';
+import WelcomeView from './WelcomeView';
+import InputBar from './InputBar';
+
+export default function AIView() {
   const [messages, setMessages] = useState([]);
   const [inputBarText, setInputBarText] = useState('');
   const scrollViewRef = useRef(null);
 
-  // Scroll to bottom helper
-  const scrollToBottom = (animated = true) => {
-    // Small timeout ensures the layout has calculated before scrolling
+  const resetChat = () => {
+    setMessages([]);
+    clearInput();
+  };
+
+  const sendMessage = (manualText) => {
+    const textToSend = typeof manualText === 'string' ? manualText : inputBarText;
+    const trimmed = textToSend.trim();
+    if (trimmed.length === 0) return;
+
+    const responses = handleInput(trimmed);
+    const newMsgs = [
+      { direction: 'right', text: trimmed },
+      ...responses.map(msg => ({ direction: 'left', text: msg }))
+    ];
+
+    setMessages(prev => [...prev, ...newMsgs]);
+    setInputBarText('');
+    
     setTimeout(() => {
-      scrollViewRef.current?.scrollToEnd({ animated });
+      scrollViewRef.current?.scrollToEnd({ animated: true });
     }, 100);
   };
 
-  useEffect(() => {
-    // Setup keyboard listeners
-    const showSubscription = Keyboard.addListener('keyboardDidShow', () => scrollToBottom());
-    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => scrollToBottom());
-
-    // Initial scroll
-    scrollToBottom(false);
-
-    return () => {
-      showSubscription.remove();
-      hideSubscription.remove();
-    };
-  }, []);
-
-  // Scroll whenever messages update
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  const sendMessage = () => {
-    if (inputBarText.trim().length === 0) return;
-
-    // Correct way to update state: create a NEW array
-    let newMessages = [{ direction: 'right', text: inputBarText }];
-    const aResponse = handleInput(inputBarText);
-    for(const message of aResponse){
-      newMessages.push({direction: "left", text: message});
-    }
-    setMessages([...messages, ...newMessages]);
-    setInputBarText('');
-  };
-
   return (
-    <View style={styles.outer}>
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
-        style={{ flex: 1 }}
-      >
-        {messages.length?(
-        <ChatView scrollToBottom={scrollToBottom} 
-        sendMessage={sendMessage} 
-        scrollViewRef={scrollViewRef} 
-        styles={styles} 
-        messages={messages} 
-        setInputBarText={setInputBarText}
-        inputBarText={inputBarText}  />
-
-        ):(
+    <View style={styles.container}>
+      <View style={styles.main}>
+        {messages.length === 0 ? (
           <WelcomeView 
-          scrollToBottom={scrollToBottom} 
-        sendMessage={sendMessage} 
-        scrollViewRef={scrollViewRef} 
-        styles={styles} 
-        messages={messages} 
-        setInputBarText={setInputBarText}
-        inputBarText={inputBarText}  />
-
+            sendMessage={sendMessage} 
+            setInputBarText={setInputBarText} 
+          />
+        ) : (
+          <View style={styles.chatWrapper}>
+            <TouchableOpacity style={styles.leaveBtn} onPress={resetChat}>
+              <Text style={styles.leaveText}>Leave</Text>
+            </TouchableOpacity>
+            <ChatView messages={messages} scrollViewRef={scrollViewRef} />
+          </View>
         )}
-      </KeyboardAvoidingView>
+      </View>
+
+      <View style={styles.footer}>
+        <InputBar
+          onSendPressed={sendMessage}
+          onChangeText={setInputBarText}
+          text={inputBarText}
+        />
+      </View>
     </View>
   );
-};
+}
 
-//TODO: separate these out. This is what happens when you're in a hurry!
 const styles = StyleSheet.create({
-
-  //ChatView
-
-  outer: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    backgroundColor: 'white'
+  container: { 
+    flex: 1, 
+    backgroundColor: '#FFF0F5' 
   },
-
-  messages: {
-    flex: 1
+  main: { 
+    flex: 1 
   },
-
-})
+  chatWrapper: { 
+    flex: 1 
+  },
+  footer: { 
+    backgroundColor: '#fff', 
+    borderTopWidth: 2, 
+    borderTopColor: '#FF69B4' 
+  },
+  leaveBtn: {
+    position: 'absolute',
+    top: 40,
+    right: 20,
+    zIndex: 999,
+    backgroundColor: '#FF1493',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 25,
+    elevation: 5
+  },
+  leaveText: { 
+    color: '#fff', 
+    fontWeight: 'bold', 
+    fontSize: 16 
+  }
+});

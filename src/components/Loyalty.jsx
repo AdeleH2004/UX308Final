@@ -9,7 +9,7 @@ export default function App() {
 
     return (
         <View style={styles.container}>
-            <Text>Hello from Rich</Text> 
+
 
             <Portal>
                 <Dialog visible={visible} onDismiss={() => setVisible(false)}>

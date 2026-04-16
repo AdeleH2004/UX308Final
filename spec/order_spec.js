@@ -1,21 +1,43 @@
 import { handleInput, clearInput } from '../src/Order.js';
 
-describe("Tests all stages of an order", function () {
+describe("Nail salon chatbot flow", function () {
+
     beforeEach(function () {
         clearInput();
     });
-    it("test hello", function () {
-        const aResults = handleInput("hello");
-        expect(aResults[0]).toBe("Welcome to Rich's Acton Rapid Test.");
+
+    it("welcoming message", function () {
+        const aResults = handleInput("hi");
+        expect(aResults[0]).toBe("Welcome to Naomi's Nails.");
     });
-    it("test yes", function () {
-        handleInput("hello");
+
+    it("choose shape", function () {
+        handleInput("hi");
+        const aResults = handleInput("coffin");
+        expect(aResults[0]).toBe("Nice choice. Short, medium, or long?");
+    });
+
+    it("choose length", function () {
+        handleInput("hi");
+        handleInput("square");
+        const aResults = handleInput("long");
+        expect(aResults[0]).toBe("Want to add gems?");
+    });
+
+    it("upsell yes", function () {
+        handleInput("hi");
+        handleInput("round");
+        handleInput("short");
         const aResults = handleInput("yes");
-        expect(aResults[0]).toBe("Your rapid test is reserved");
+        expect(aResults[0]).toBe("Gems added.");
     });
-    it("test no", function () {
-        handleInput("hello");
+
+    it("upsell no", function () {
+        handleInput("hi");
+        handleInput("coffin");
+        handleInput("medium");
         const aResults = handleInput("no");
-        expect(aResults[0]).toBe("Thanks for trying our reservation system");
+        expect(aResults[0]).toBe("No gems added.");
     });
+
 });

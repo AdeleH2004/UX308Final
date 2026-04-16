@@ -1,32 +1,65 @@
-let currentState = welcoming;
+let currentState = welcoming
 
-export function handleInput(sInput) {
-  return currentState(sInput);
+export function handleInput(sInput, addPoint) {
+  return currentState(sInput, addPoint)
 }
 
-export function clearInput(){
-  currentState = welcoming;  
-}
-
-function welcoming() {
-  let aReturn = [];
-  currentState = reserving;
-  aReturn.push("Welcome to Rich's Acton Rapid Test.");
-  aReturn.push("Would you like to reserve a rapid test kit?");
-  return aReturn;
-}
-
-function reserving(sInput) {
-  let aReturn = [];
+export function clearInput() {
   currentState = welcoming
-  if (sInput.toLowerCase().startsWith('y')) {
-    aReturn.push(`Your rapid test is reserved`);
-    let d = new Date();
-    d.setMinutes(d.getMinutes() + 120);
-    aReturn.push(`Please pick it up at 123 Tidy St., Acton before ${d.toTimeString()}`);
+}
+
+function welcoming(sInput, addPoint) {
+  let messages = []
+  currentState = chooseShape
+  messages.push("Welcome to Naomi's Nails.")
+  messages.push("What nail shape would you like? Coffin, square, or round?")
+  return messages
+}
+
+function chooseShape(sInput, addPoint) {
+  let messages = []
+  const choice = sInput.toLowerCase()
+
+  if (choice.includes("coffin") || choice.includes("square") || choice.includes("round")) {
+    currentState = chooseLength
+    messages.push("Nice choice. Short, medium, or long?")
   } else {
-    aReturn.push("Thanks for trying our reservation system");
-    aReturn.push("Maybe next time");
+    messages.push("Please choose coffin, square, or round.")
   }
-  return aReturn;
+
+  return messages
+}
+
+function chooseLength(sInput, addPoint) {
+  let messages = []
+  const choice = sInput.toLowerCase()
+
+  if (choice.includes("short") || choice.includes("medium") || choice.includes("long")) {
+    currentState = upsellGems
+    messages.push("Want to add gems?")
+  } else {
+    messages.push("Please choose short, medium, or long.")
+  }
+
+  return messages
+}
+
+function upsellGems(sInput, addPoint) {
+  let messages = []
+  currentState = welcoming
+
+  const choice = sInput.toLowerCase()
+
+  if (choice.includes("yes") || choice.includes("gems")) {
+    messages.push("Gems added.")
+  } else {
+    messages.push("No gems added.")
+  }
+
+  if (addPoint) {
+    addPoint()
+  }
+
+  messages.push("All set. Appointment booked.")
+  return messages
 }
