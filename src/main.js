@@ -1,7 +1,7 @@
 import { AppRegistry } from 'react-native';
-import App from './components/App';
+import App from './components/App'; // Points to src/components/App.jsx
 
-AppRegistry.registerComponent('App', () => App);
-AppRegistry.runApplication('App', {
+AppRegistry.registerComponent('main', () => App);
+AppRegistry.runApplication('main', {
   rootTag: document.getElementById('root')
 });

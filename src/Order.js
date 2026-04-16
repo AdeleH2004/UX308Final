@@ -1,65 +1,51 @@
-let currentState = welcoming
-
-export function handleInput(sInput, addPoint) {
-  return currentState(sInput, addPoint)
-}
+let sState = "WELCOME";
 
 export function clearInput() {
-  currentState = welcoming
+    sState = "WELCOME";
 }
 
-function welcoming(sInput, addPoint) {
-  let messages = []
-  currentState = chooseShape
-  messages.push("Welcome to Naomi's Nails.")
-  messages.push("What nail shape would you like? Coffin, square, or round?")
-  return messages
-}
+export function handleInput(sInput) {
+    let aReturn = [];
+    const input = sInput.toLowerCase();
 
-function chooseShape(sInput, addPoint) {
-  let messages = []
-  const choice = sInput.toLowerCase()
+    switch (sState) {
+        case "WELCOME":
+            sState = "SHAPE_OR_STYLE";
+            aReturn.push("Welcome to Naomi's Nails."); 
+            break;
 
-  if (choice.includes("coffin") || choice.includes("square") || choice.includes("round")) {
-    currentState = chooseLength
-    messages.push("Nice choice. Short, medium, or long?")
-  } else {
-    messages.push("Please choose coffin, square, or round.")
-  }
+        case "SHAPE_OR_STYLE":
+            if (input.includes("cut") || input.includes("hair") || input.includes("buzz")) {
+                sState = "UPSELL_HAIR";
+                aReturn.push("Nice choice. Would you like some shampoo to take home with you?");
+            } else {
+                sState = "LENGTH";
+                aReturn.push("Nice choice. Short, medium, or long?");
+            }
+            break;
 
-  return messages
-}
+        case "LENGTH":
+            sState = "UPSELL_NAILS";
+            aReturn.push("Want to add gems?");
+            break;
 
-function chooseLength(sInput, addPoint) {
-  let messages = []
-  const choice = sInput.toLowerCase()
+        case "UPSELL_NAILS":
+            sState = "WELCOME"; 
+            if (input.includes("yes")) {
+                aReturn.push("Gems added.");
+            } else {
+                aReturn.push("No gems added.");
+            }
+            break;
 
-  if (choice.includes("short") || choice.includes("medium") || choice.includes("long")) {
-    currentState = upsellGems
-    messages.push("Want to add gems?")
-  } else {
-    messages.push("Please choose short, medium, or long.")
-  }
-
-  return messages
-}
-
-function upsellGems(sInput, addPoint) {
-  let messages = []
-  currentState = welcoming
-
-  const choice = sInput.toLowerCase()
-
-  if (choice.includes("yes") || choice.includes("gems")) {
-    messages.push("Gems added.")
-  } else {
-    messages.push("No gems added.")
-  }
-
-  if (addPoint) {
-    addPoint()
-  }
-
-  messages.push("All set. Appointment booked.")
-  return messages
+        case "UPSELL_HAIR":
+            sState = "WELCOME"; 
+            if (input.includes("yes")) {
+                aReturn.push("Shampoo added.");
+            } else {
+                aReturn.push("No shampoo added.");
+            }
+            break;
+    }
+    return aReturn;
 }

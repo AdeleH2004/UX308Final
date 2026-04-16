@@ -1,7 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
-import { handleInput, clearInput } from '../Order';
-
+import { handleInput, clearInput } from './Order'; // Assumes Order.js is in /src/
 import ChatView from './ChatView';
 import WelcomeView from './WelcomeView';
 import InputBar from './InputBar';
@@ -10,11 +9,6 @@ export default function AIView() {
   const [messages, setMessages] = useState([]);
   const [inputBarText, setInputBarText] = useState('');
   const scrollViewRef = useRef(null);
-
-  const resetChat = () => {
-    setMessages([]);
-    clearInput();
-  };
 
   const sendMessage = (manualText) => {
     const textToSend = typeof manualText === 'string' ? manualText : inputBarText;
@@ -29,71 +23,29 @@ export default function AIView() {
 
     setMessages(prev => [...prev, ...newMsgs]);
     setInputBarText('');
-    
-    setTimeout(() => {
-      scrollViewRef.current?.scrollToEnd({ animated: true });
-    }, 100);
+    setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.main}>
-        {messages.length === 0 ? (
-          <WelcomeView 
-            sendMessage={sendMessage} 
-            setInputBarText={setInputBarText} 
-          />
-        ) : (
-          <View style={styles.chatWrapper}>
-            <TouchableOpacity style={styles.leaveBtn} onPress={resetChat}>
-              <Text style={styles.leaveText}>Leave</Text>
-            </TouchableOpacity>
-            <ChatView messages={messages} scrollViewRef={scrollViewRef} />
-          </View>
-        )}
-      </View>
-
-      <View style={styles.footer}>
-        <InputBar
-          onSendPressed={sendMessage}
-          onChangeText={setInputBarText}
-          text={inputBarText}
-        />
-      </View>
+      {messages.length === 0 ? (
+        <WelcomeView sendMessage={sendMessage} setInputBarText={setInputBarText} />
+      ) : (
+        <View style={styles.chatWrapper}>
+          <TouchableOpacity style={styles.leaveBtn} onPress={() => { setMessages([]); clearInput(); }}>
+            <Text style={styles.leaveText}>Leave</Text>
+          </TouchableOpacity>
+          <ChatView messages={messages} scrollViewRef={scrollViewRef} />
+        </View>
+      )}
+      <InputBar onSendPressed={sendMessage} onChangeText={setInputBarText} text={inputBarText} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    backgroundColor: '#FFF0F5' 
-  },
-  main: { 
-    flex: 1 
-  },
-  chatWrapper: { 
-    flex: 1 
-  },
-  footer: { 
-    backgroundColor: '#fff', 
-    borderTopWidth: 2, 
-    borderTopColor: '#FF69B4' 
-  },
-  leaveBtn: {
-    position: 'absolute',
-    top: 40,
-    right: 20,
-    zIndex: 999,
-    backgroundColor: '#FF1493',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 25,
-    elevation: 5
-  },
-  leaveText: { 
-    color: '#fff', 
-    fontWeight: 'bold', 
-    fontSize: 16 
-  }
+  container: { flex: 1, backgroundColor: '#FFF0F5' },
+  chatWrapper: { flex: 1 },
+  leaveBtn: { position: 'absolute', top: 50, right: 20, zIndex: 10, backgroundColor: '#FF1493', padding: 10, borderRadius: 20 },
+  leaveText: { color: '#fff', fontWeight: 'bold' }
 });

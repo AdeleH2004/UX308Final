@@ -1,6 +1,6 @@
 import { handleInput, clearInput } from '../src/Order.js';
 
-describe("Nail salon chatbot flow", function () {
+describe("Salon chatbot flow", function () {
 
     beforeEach(function () {
         clearInput();
@@ -24,7 +24,7 @@ describe("Nail salon chatbot flow", function () {
         expect(aResults[0]).toBe("Want to add gems?");
     });
 
-    it("upsell yes", function () {
+    it("upsell nails yes", function () {
         handleInput("hi");
         handleInput("round");
         handleInput("short");
@@ -32,7 +32,7 @@ describe("Nail salon chatbot flow", function () {
         expect(aResults[0]).toBe("Gems added.");
     });
 
-    it("upsell no", function () {
+    it("upsell nails no", function () {
         handleInput("hi");
         handleInput("coffin");
         handleInput("medium");
@@ -40,4 +40,16 @@ describe("Nail salon chatbot flow", function () {
         expect(aResults[0]).toBe("No gems added.");
     });
 
+    it("hair path test", function () {
+        handleInput("hi");
+        const aResults = handleInput("buzz cut");
+        expect(aResults[0]).toBe("Nice choice. Would you like some shampoo to take home with you?");
+    });
+
+    it("upsell hair yes", function () {
+        handleInput("hi");
+        handleInput("hair");
+        const aResults = handleInput("yes");
+        expect(aResults[0]).toBe("Shampoo added.");
+    });
 });
